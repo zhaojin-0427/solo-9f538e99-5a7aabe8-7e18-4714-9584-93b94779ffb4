@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>地方志引文核对</title>
+<style>
+  body { font-family: "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+         margin: 2em auto; max-width: 960px; padding: 0 1em; color: #222; }
+  nav { margin-bottom: 1em; }
+  nav a { margin-right: .8em; }
+  table { border-collapse: collapse; width: 100%; margin-top: 1em; }
+  th, td { border: 1px solid #ccc; padding: .35em .6em; text-align: left; font-size: .95em; }
+  tr.pending { background: #fff3cd; }
+  .msg-ok { background: #d1e7dd; padding: .5em 1em; border-radius: 4px; }
+  .msg-error { background: #f8d7da; padding: .5em 1em; border-radius: 4px; }
+  pre.page { background: #f8f8f8; border: 1px solid #ddd; padding: 1em;
+             white-space: pre-wrap; word-break: break-all; }
+  form.upload { border: 1px dashed #aaa; padding: 0 1em 1em; margin: 1.5em 0; }
+  .meta { color: #666; font-size: .9em; }
+</style>
+</head>
+<body>
+<nav>
+  <strong>版次：</strong>
+  <a href="{{ url_for('main.index') }}">最新版</a>
+  {% for v in versions %}
+  <a href="{{ url_for('main.show_version', version=v.version) }}">第 {{ v.version }} 版</a>
+  {% endfor %}
+</nav>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+  <p class="msg-{{ category }}">{{ message }}</p>
+  {% endfor %}
+{% endwith %}
+{% block content %}{% endblock %}
+</body>
+</html>

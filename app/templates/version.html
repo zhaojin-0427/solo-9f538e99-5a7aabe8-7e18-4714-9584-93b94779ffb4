@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>地方志引文核对</h1>
+
+<form class="upload" method="post" action="{{ url_for('main.upload_page') }}"
+      enctype="multipart/form-data">
+  <h2>上传新校样</h2>
+  <p>页稿文本（.txt，UTF-8，不超过 1200 字）：<input type="file" name="text" required></p>
+  <p>引用 CSV（<code>引用号,起始下标,结束下标</code>，右端不含；新引用或人工修正时提供，可省）：
+     <input type="file" name="citations"></p>
+  <button type="submit">发布新版</button>
+</form>
+
+{% if error %}<p class="msg-error">{{ error }}</p>{% endif %}
+
+{% if view %}
+<h2>第 {{ view.version }} 版
+  <span class="meta">{{ view.created_at }} ｜ {{ view.char_count }} 字</span></h2>
+<pre class="page">{{ view.text }}</pre>
+
+<h2>引文核对结果（{{ view.citations|length }} 条）</h2>
+{% if view.citations %}
+<table>
+  <tr><th>引用号</th><th>状态</th><th>起始下标</th><th>结束下标</th><th>定位版号</th><th>引文原文</th></tr>
+  {% for c in view.citations %}
+  <tr class="{{ 'pending' if c.status == 'pending' else '' }}">
+    <td>{{ c.citation_id }}</td>
+    <td>{{ '待核对' if c.status == 'pending' else '已定位' }}</td>
+    <td>{{ c.start }}</td>
+    <td>{{ c.end }}</td>
+    <td>第 {{ c.located_version }} 版</td>
+    <td>{{ c.excerpt }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<p class="meta">“待核对”条目显示的是最近一次定位成功的版号和位置。</p>
+{% else %}
+<p>本版没有引用。</p>
+{% endif %}
+{% else %}
+<p>还没有任何页稿，请先上传第一版。</p>
+{% endif %}
+{% endblock %}
