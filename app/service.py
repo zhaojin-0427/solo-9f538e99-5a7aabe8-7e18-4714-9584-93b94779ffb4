@@ -15,12 +15,9 @@ import csv
 import io
 
 from .align import PageAlignment
+from .errors import ValidationError
 
 MAX_TEXT_LEN = 1200
-
-
-class ValidationError(Exception):
-    """输入不合法：本次发布失败，上一版继续有效。"""
 
 
 def parse_citations_csv(csv_text: str):

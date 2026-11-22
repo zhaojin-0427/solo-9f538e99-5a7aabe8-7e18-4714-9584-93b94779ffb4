@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>引文目录
+  {% if catalog %}
+  <span class="badge">当前第 {{ catalog.version }} 版 · {{ catalog.entry_count }} 条</span>
+  {% endif %}
+</h2>
+
+<form class="upload" method="post" action="{{ url_for('main.upload_catalog') }}"
+      enctype="multipart/form-data">
+  <h3>替换引文目录</h3>
+  <p>UTF-8 CSV，每行 <code>书目号,引文文字</code>，最多 10 万行、32 MiB。
+     匹配时忽略空白与 Unicode 标点，每条引文去掉这些字符后须为 4～40 字。
+     相同引文（忽略空白标点后）对应多个书目号时整份拒收。</p>
+  <p><input type="file" name="catalog" accept=".csv,text/csv" required></p>
+  <button type="submit">导入目录</button>
+</form>
+
+{% if catalog_versions %}
+<table>
+  <tr><th>目录版号</th><th>导入时间</th><th>条数</th><th>文件字节</th></tr>
+  {% for c in catalog_versions %}
+  <tr>
+    <td>第 {{ c.version }} 版</td>
+    <td>{{ c.created_at }}</td>
+    <td>{{ c.entry_count }}</td>
+    <td>{{ c.source_bytes }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<p class="meta">导入成功后新版立即生效；导入失败或正在导入时，既有目录继续有效。</p>
+{% else %}
+<p>还没有导入过引文目录。</p>
+{% endif %}
+{% endblock %}

@@ -16,9 +16,35 @@
 {% if view %}
 <h2>第 {{ view.version }} 版
   <span class="meta">{{ view.created_at }} ｜ {{ view.char_count }} 字</span></h2>
+<p><a href="{{ url_for('main.check_version', version=view.version) }}">单独打开核查页（可切换目录版本）</a></p>
 <pre class="page">{{ view.text }}</pre>
 
-<h2>引文核对结果（{{ view.citations|length }} 条）</h2>
+<h2>引文核查
+  {% if catalog %}<span class="badge">目录第 {{ catalog.version }} 版 · {{ catalog.entry_count }} 条</span>{% endif %}
+</h2>
+{% if catalog %}
+<p class="meta">匹配时忽略空白和 Unicode 标点；区间从 0 起算、右端不含。
+  {% if skipped %}已跳过 {{ skipped }} 处被本版已定位引文完整覆盖的命中。{% endif %}</p>
+{% if hits %}
+<table>
+  <tr><th>书目号</th><th>目录原文</th><th>原稿命中</th><th>原稿区间</th></tr>
+  {% for h in hits %}
+  <tr>
+    <td>{{ h.book_no }}</td>
+    <td>{{ h.citation }}</td>
+    <td>{{ h.excerpt }}</td>
+    <td><code>[{{ h.start }}, {{ h.end }})</code></td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>本版没有命中任何引文。</p>
+{% endif %}
+{% else %}
+<p>还没有引文目录，请先到<a href="{{ url_for('main.catalog_page') }}">引文目录</a>页导入。</p>
+{% endif %}
+
+<h2>本版已登记引文（{{ view.citations|length }} 条）</h2>
 {% if view.citations %}
 <table>
   <tr><th>引用号</th><th>状态</th><th>起始下标</th><th>结束下标</th><th>定位版号</th><th>引文原文</th></tr>
@@ -35,7 +61,7 @@
 </table>
 <p class="meta">“待核对”条目显示的是最近一次定位成功的版号和位置。</p>
 {% else %}
-<p>本版没有引用。</p>
+<p>本版没有已登记引用。</p>
 {% endif %}
 {% else %}
 <p>还没有任何页稿，请先上传第一版。</p>

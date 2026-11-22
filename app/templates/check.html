@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+{% if view %}
+<h2>核查第 {{ view.version }} 版
+  {% if catalog %}<span class="badge">目录第 {{ catalog.version }} 版 · {{ catalog.entry_count }} 条</span>{% endif %}
+</h2>
+{% if catalog_versions %}
+<form method="get" class="meta">
+  使用目录版本：
+  <select name="catalog_version" onchange="this.form.submit()">
+    {% for cv in catalog_versions %}
+    <option value="{{ cv.version }}"
+      {{ 'selected' if catalog and cv.version == catalog.version else '' }}>
+      第 {{ cv.version }} 版（{{ cv.entry_count }} 条，{{ cv.created_at }}）
+    </option>
+    {% endfor %}
+  </select>
+  <noscript><button type="submit">切换</button></noscript>
+</form>
+{% endif %}
+<p class="meta">
+  匹配时忽略空白和 Unicode 标点；区间从 0 起算、右端不含。
+  {% if skipped %}已跳过 {{ skipped }} 处被本版已定位引文完整覆盖的命中。{% endif %}
+</p>
+
+{% if error %}
+<p class="msg-error">{{ error }}</p>
+{% else %}
+<h3>命中 {{ hits|length }} 处</h3>
+{% if hits %}
+<table>
+  <tr><th>书目号</th><th>目录原文</th><th>起始</th><th>结束</th><th>原稿命中</th><th>原稿区间</th></tr>
+  {% for h in hits %}
+  <tr>
+    <td>{{ h.book_no }}</td>
+    <td>{{ h.citation }}</td>
+    <td>{{ h.start }}</td>
+    <td>{{ h.end }}</td>
+    <td>{{ h.excerpt }}</td>
+    <td><code>[{{ h.start }}, {{ h.end }})</code></td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>本版没有命中任何引文。</p>
+{% endif %}
+
+<h3>本版页稿</h3>
+<pre class="page">{{ view.text }}</pre>
+{% endif %}
+{% else %}
+<p class="msg-error">{{ error or '该版不存在' }}</p>
+{% endif %}
+{% endblock %}

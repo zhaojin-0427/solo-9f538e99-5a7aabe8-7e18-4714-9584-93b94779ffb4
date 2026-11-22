@@ -6,7 +6,7 @@
 <title>地方志引文核对</title>
 <style>
   body { font-family: "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
-         margin: 2em auto; max-width: 960px; padding: 0 1em; color: #222; }
+         margin: 2em auto; max-width: 1100px; padding: 0 1em; color: #222; }
   nav { margin-bottom: 1em; }
   nav a { margin-right: .8em; }
   table { border-collapse: collapse; width: 100%; margin-top: 1em; }
@@ -18,6 +18,9 @@
              white-space: pre-wrap; word-break: break-all; }
   form.upload { border: 1px dashed #aaa; padding: 0 1em 1em; margin: 1.5em 0; }
   .meta { color: #666; font-size: .9em; }
+  .badge { background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 4px;
+           padding: .1em .5em; font-size: .85em; }
+  mark { background: #ffe58f; }
 </style>
 </head>
 <body>
@@ -27,6 +30,12 @@
   {% for v in versions %}
   <a href="{{ url_for('main.show_version', version=v.version) }}">第 {{ v.version }} 版</a>
   {% endfor %}
+  ｜ <a href="{{ url_for('main.catalog_page') }}">引文目录</a>
+  {% if catalog %}
+  <span class="badge">目录第 {{ catalog.version }} 版 · {{ catalog.entry_count }} 条</span>
+  {% else %}
+  <span class="badge">尚无引文目录</span>
+  {% endif %}
 </nav>
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% for category, message in messages %}
